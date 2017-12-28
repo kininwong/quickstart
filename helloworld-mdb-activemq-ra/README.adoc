@@ -44,6 +44,8 @@ cp activemq-rar-{version}.rar EAP_HOME/standalone/deployments/
 ----
 open EAP_HOME/standalone/configuration/standalone.xml file, paste the resource-adapter element
 
+Assume the activemq is installed in the same server as the EAP
+
 <server xmlns="urn:jboss:domain:1.4">
     ...
     <profile>
