@@ -42,7 +42,7 @@ cp activemq-rar-{version}.rar EAP_HOME/standalone/deployments/
 ----
 . Update the JBoss EAP standalone-full.xml configuration
 ----
-open EAP_HOME/standalone/configuration/standalone.xml file, paste the resource-adapter element
+open EAP_HOME/standalone/configuration/standalone-full.xml file, paste the resource-adapter element
 
 Assume the activemq is installed in the same server as the EAP
 
