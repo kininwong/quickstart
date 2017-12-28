@@ -33,6 +33,93 @@ All you need to build this project is {buildRequirements}. See https://github.co
 
 In the following instructions, replace `{jbossHomeName}` with the actual path to your {productName} installation. The installation path is described in detail here: https://github.com/jboss-developer/jboss-developer-shared-resources/blob/master/guides/USE_OF_{jbossHomeName}.md#use-of-eap_home-and-jboss_home-variables[Use of {jbossHomeName} and JBOSS_HOME Variables].
 
+== WildFly server setup
+. Download the activemq rar from 
+http://repo1.maven.org/maven2/org/apache/activemq/activemq-rar/{version}/activemq-rar-{version}.rar
+. Install the ActiveMQ resource adapter above
+----
+cp activemq-rar-{version}.rar EAP_HOME/standalone/deployments/
+----
+. Update the JBoss EAP standalone-full.xml configuration
+----
+open EAP_HOME/standalone/configuration/standalone.xml file, paste the resource-adapter element
+
+<server xmlns="urn:jboss:domain:1.4">
+    ...
+    <profile>
+        ...
+        <subsystem xmlns="urn:jboss:domain:resource-adapters:1.1">
+            <resource-adapters>
+                <resource-adapter id="activemq-rar.rar">
+                    <archive>
+                        activemq-rar.rar
+                    </archive>
+                    <transaction-support>XATransaction</transaction-support>
+                    <config-property name="UserName">
+                        defaultUser
+                    </config-property>
+                    <config-property name="Password">
+                        defaultPassword
+                    </config-property>
+                    <config-property name="ServerUrl">
+                        tcp://localhost:61616?jms.rmIdFromConnectionId=true
+                    </config-property>
+                    <connection-definitions>
+                        <connection-definition
+                              class-name="org.apache.activemq.ra.ActiveMQManagedConnectionFactory"
+                              jndi-name="java:/ConnectionFactory"
+                              enabled="true"
+                              pool-name="ConnectionFactory"
+			      tracking="false">
+                            <xa-pool>
+                                <min-pool-size>1</min-pool-size>
+                                <max-pool-size>20</max-pool-size>
+                                <prefill>false</prefill>
+                                <is-same-rm-override>false</is-same-rm-override>
+                            </xa-pool>
+                            <recovery>
+                                <recover-credential>
+                                    <user-name>defaultUser</user-name>
+                                    <password>defaultPassword</password>
+                                </recover-credential>
+                            </recovery>
+                        </connection-definition>
+                    </connection-definitions>
+                    <admin-objects>
+                        <admin-object
+                              class-name="org.apache.activemq.command.ActiveMQQueue"
+                              jndi-name="java:/queue/HELLOWORLDMDBQueue"
+                              use-java-context="true"
+                              pool-name="HELLOWORLDMDBQueue">
+                            <config-property name="PhysicalName">
+                                HELLOWORLDMDBQueue
+                            </config-property>
+                        </admin-object>
+                        <admin-object
+                              class-name="org.apache.activemq.command.ActiveMQTopic"
+                              jndi-name="java:/topic/HELLOWORLDMDBTopic"
+                              use-java-context="true"
+                              pool-name="HELLOWORLDMDBTopic">
+                            <config-property name="PhysicalName">
+                                HELLOWORLDMDBTopic
+                            </config-property>
+                        </admin-object>
+                    </admin-objects>
+                </resource-adapter>
+                ...
+            </resource-adapters>
+        </subsystem>
+        ...
+    </profile>
+    ...
+</server>
+
+----
+
+
+reference:
+https://access.redhat.com/documentation/en-us/red_hat_jboss_a-mq/6.3/html-single/integrating_with_jboss_enterprise_application_platform/index
+
 == Start the Server with the Full Profile
 
 . Open a command prompt and navigate to the root of the {productName} directory.
